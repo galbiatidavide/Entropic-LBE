@@ -1,6 +1,6 @@
 // Stream with periodic boundary conditions using a linkwise approach (non optimized maintain for safety)
 
-void stream(int rank, int local_nx){
+/*void stream(int rank, int local_nx){
 
     int b  = 0;   
     int ix, iz;
@@ -51,7 +51,72 @@ void stream(int rank, int local_nx){
             }                    
         }        
     }
+}*/
+
+// Diffusive boundary conditions for microfluidics
+void stream(){
+         for (int i=0; i<nx; i++) {
+                  for (int j=0; j<nz; j++) {
+                           for (int a=0; a<q; a++) {
+                                    
+                                    int ix = i+ex[a];
+                                    int iy = j+ez[a];
+                                    // Left wall
+                                    if (ix < 0 && j != 0 && j != nz - 1) {
+
+                                             f[0][i][j] = f_temp[0][i][j];
+                                             f[2][i][j] = f_temp[2][i][j-1];                                             
+                                             f[4][i][j] = f_temp[4][i][j+1];
+                                             
+                                             f[3][i][j] = 0.5*f_temp[3][i+1][j] + 0.5*f_temp[3][i][j];
+                                             f[7][i][j] = 0.5*f_temp[7][i+1][j+1] + 0.5*f_temp[7][i][j];     
+                                             f[6][i][j] = 0.5*f_temp[6][i+1][j-1] + 0.5*f_temp[6][i][j]; 
+                                            
+                                             f[1][i][j] = f_eq[1][i][j]*(f[6][i][j] + f[3][i][j] + f[7][i][j])/(f_eq[1][i][j]+f_eq[5][i][j]+f_eq[8][i][j]);
+                                             f[5][i][j] = f_eq[5][i][j]*(f[6][i][j] + f[3][i][j] + f[7][i][j])/(f_eq[1][i][j]+f_eq[5][i][j]+f_eq[8][i][j]);
+                                             f[8][i][j] = f_eq[8][i][j]*(f[6][i][j] + f[3][i][j] + f[7][i][j])/(f_eq[1][i][j]+f_eq[5][i][j]+f_eq[8][i][j]);
+                                            
+                                             // Right wall
+                                    }else if (ix>nx-1 && j != 0 && j != nz - 1){
+                                             f[0][i][j] = f_temp[0][i][j];
+                                             f[2][i][j] = f_temp[2][i][j-1];
+                                             f[4][i][j] = f_temp[4][i][j+1];
+                                             f[1][i][j] = 0.5*f_temp[1][i-1][j] + 0.5*f_temp[1][i][j];
+                                             f[8][i][j] = 0.5*f_temp[8][i-1][j+1] + 0.5*f_temp[8][i][j];     
+                                             f[5][i][j] = 0.5*f_temp[5][i-1][j-1] + 0.5*f_temp[5][i][j]; 
+                                             
+                                             f[6][i][j] = f_eq[6][i][j]*(f[1][i][j] + f[5][i][j] + f[8][i][j])/(f_eq[6][i][j]+f_eq[3][i][j]+f_eq[7][i][j]);
+                                             f[3][i][j] = f_eq[3][i][j]*(f[1][i][j] + f[5][i][j] + f[8][i][j])/(f_eq[6][i][j]+f_eq[3][i][j]+f_eq[7][i][j]);
+                                             f[7][i][j] = f_eq[7][i][j]*(f[1][i][j] + f[5][i][j] + f[8][i][j])/(f_eq[6][i][j]+f_eq[3][i][j]+f_eq[7][i][j]); 
+                                             // Bottom wall
+                                    }else if (iy<0 && i!= 0 && i!=nx-1){
+                                             f[0][i][j] = f_temp[0][i][j];
+                                             f[3][i][j] = f_temp[3][i+1][j];
+                                             f[1][i][j] = f_temp[1][i-1][j];
+                                             f[4][i][j] = 0.5*f_temp[4][i][j+1] + 0.5*f_temp[4][i][j];
+                                             f[7][i][j] = 0.5*f_temp[7][i+1][j+1] + 0.5*f_temp[7][i][j];     
+                                             f[8][i][j] = 0.5*f_temp[8][i-1][j+1] + 0.5*f_temp[8][i][j];     
+                                             
+                                             f[2][i][j] = f_eq[2][i][j]*(f[4][i][j] + f[7][i][j] + f[8][i][j])/(f_eq[2][i][j]+f_eq[5][i][j]+f_eq[6][i][j]);
+                                             f[5][i][j] = f_eq[5][i][j]*(f[4][i][j] + f[7][i][j] + f[8][i][j])/(f_eq[2][i][j]+f_eq[5][i][j]+f_eq[6][i][j]);
+                                             f[6][i][j] = f_eq[6][i][j]*(f[4][i][j] + f[7][i][j] + f[8][i][j])/(f_eq[2][i][j]+f_eq[5][i][j]+f_eq[6][i][j]);
+                                             // Top wall
+                                             // Top left and right corners are made to remain fixed
+                                    }else if (iy>nz-1 && i!= 0 && i!=nx-1){
+                                             f[4][i][nz-1] = f_temp[2][i][nz-1];
+                                             f[7][i][nz-1] = f_temp[5][i][nz-1]-6*w[7]*rho[i][j]*V;
+                                             f[8][i][nz-1] = f_temp[6][i][nz-1]+6*w[8]*rho[i][j]*V;
+                                             // Interior nodes
+                                    }else{
+                                             f[a][ix][iy] = f_temp[a][i][j];
+                                    }
+                           }
+                  }
+         }
+         return;
 }
+
+
 
 void compute_macroscopic_quantities(int rank, int local_nx){
     for (int i = 0 + rank*local_nx; i < local_nx*(rank+1); i++) {
