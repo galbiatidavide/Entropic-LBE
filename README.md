@@ -8,6 +8,25 @@ The project includes modular, scalable code designed for extensibility and high-
 
 To protect the originality and performance advantages of the full codebase, I have opted to publish only a simplified 2D version on GitHub. This public release is intentionally basic, designed primarily to illustrate the core algorithmic structure and key steps of the Entropic Lattice Boltzmann Method, and relies on traditional dynamic memory allocation rather than the optimized PETSc-based backend used in the complete implementation.
 
+<table>
+  <tr>
+    <td align="center">
+      <strong>Velocity ux-velocity 2D lid-driven Re = 1000</strong><br>
+      <img src="https://raw.githubusercontent.com/galbiatidavide/Entropic-LBE/main/graphic_examples/ux.gif" width="300">
+    </td>
+    <td align="center">
+      <strong>Velocity uz-velocity 2D lid-driven Re = 1000</strong><br>
+      <img src="https://raw.githubusercontent.com/galbiatidavide/Entropic-LBE/main/graphic_examples/uz.gif" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <strong>Magnitude 2D lid-driven Re = 1000</strong><br>
+      <img src="https://raw.githubusercontent.com/galbiatidavide/Entropic-LBE/main/graphic_examples/mag.gif" width="300">
+    </td>
+  </tr>
+</table>
+
 🔬 The project is actively evolving, with ongoing developments focused on extending the method to more rarefied regimes.
 
 This project was developed in the context of the course *Methods and Models for Statistical Mechanics*.
